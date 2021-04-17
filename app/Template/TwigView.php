@@ -3,6 +3,7 @@
 namespace App\Template;
 
 use App\Models\User;
+use App\Models\UserCollection;
 use App\Models\UserImages;
 use Twig\Environment;
 
@@ -40,25 +41,47 @@ class TwigView
         ];
     }
 
-    public function lookingForPage(User $user, UserImages $images): array
+    public function lookingForPage(User $user, User $interest, ?string $image): array
     {
-        $images = [
-            $images->getFirstImage(),
-            $images->getSecondImage(),
-            $images->getThirdImage()
-        ];
-
         return [
-            'name' => $user->getName(),
-            'gender' => $user->getGender(),
-            'lookingFor' => $user->getLookingFor(),
-            'personality' => $user->getPersonality(),
-            'id' => $user->getId(),
-            'userImage' => $images[rand(0, count($images)-1)],
-            'image' => 'Images/none.jpg'
+            'userID' => $user->getId(),
+            'name' => $interest->getName(),
+            'gender' => $interest->getGender(),
+            'lookingFor' => $interest->getLookingFor(),
+            'personality' => $interest->getPersonality(),
+            'interestID' => $interest->getId(),
+            'userImage' => $image,
+            'image' => 'storage/Images/private/none.jpg'//'Images/none.jpg'
+        ];
+    }
+
+    public function historyPage(UserCollection $likes, UserCollection $dislikes): array
+    {
+        $likedList = [];
+        foreach ($likes->getUsers() as $like) {
+            $likedList[] =
+                [
+                    'name' => $like->getName(),
+                    'personality' => $like->getPersonality(),
+                    'gender' => $like->getGender()
+                ];
+        }
+
+        $dislikedList = [];
+        foreach ($dislikes->getUsers() as $dislike) {
+            $dislikedList[] =
+                [
+                    'name' => $dislike->getName(),
+                    'personality' => $dislike->getPersonality(),
+                    'gender' => $dislike->getGender()
+                ];
+        }
+
+       return [
+            'like' => $likedList,
+            'dislike' => $dislikedList
         ];
 
     }
-
 
 }

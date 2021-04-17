@@ -16,6 +16,8 @@ class ImageUploadService
 
     public function uploadImage(ImagePaths $path): void
     {
+        //mkdir('/storage/files/pictures/JAUNS_FOLDERIS/');
+
         $fileName = uniqid('', true) . "." . $path->getFileExtension();
         $location = 'Images/' . $fileName;
         move_uploaded_file($path->getTemporaryLocation(), $location);

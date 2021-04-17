@@ -1,19 +1,25 @@
 <?php
 
+use App\Controllers\HistoryController;
 use App\Controllers\HomeController;
 use App\Controllers\AuthorizationController;
+use App\Controllers\LikingController;
 use App\Controllers\LogoutController;
 use App\Controllers\LookController;
 use App\Controllers\RegistrationController;
 use App\Controllers\ImageUploadController;
 use App\Controllers\UserHomeController;
 use App\Repositories\MySQLImageRepository;
+use App\Repositories\MySQLLikingRepository;
 use App\Repositories\MySQLUserRepository;
 use App\Repositories\UserImageRepository;
+use App\Repositories\UserLikingRepository;
 use App\Repositories\UserRepository;
 use App\Services\AuthorizationService;
 
+use App\Services\HistoryService;
 use App\Services\ImageUploadService;
+use App\Services\LikingService;
 use App\Services\LogoutUserService;
 use App\Services\LookService;
 use App\Services\RegisterUserService;
@@ -38,13 +44,14 @@ $container->add(TwigView::class,TwigView::class)
 
 $container->add(UserRepository::class, MySQLUserRepository::class);
 $container->add(UserImageRepository::class, MySQLImageRepository::class);
+$container->add(UserLikingRepository::class, MySQLLikingRepository::class);
 
 
 $container->add(HomeController::class, HomeController::class);
 $container->add(ImageValidation::class,ImageValidation::class);
 
 $container->add(RegisterUserService::class, RegisterUserService::class)
-    ->addArguments([UserRepository::class, UserImageRepository::class]);
+    ->addArguments([UserRepository::class, UserImageRepository::class, UserLikingRepository::class]);
 $container->add(RegistrationController::class, RegistrationController::class)
     ->addArguments([RegisterUserService::class, TwigView::class]);
 
@@ -71,26 +78,32 @@ $container->add(ImageUploadController::class, ImageUploadController::class)
 $container->add(LookService::class, LookService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class]);
 $container->add(LookController::class, LookController::class)
-    ->addArguments([LookService::class, Environment::class]);
+    ->addArguments([LookService::class, TwigView::class]);
 
+$container->add(LikingService::class, LikingService::class)
+    ->addArguments([UserRepository::class, UserLikingRepository::class]);
+$container->add(LikingController::class, LikingController::class)
+    ->addArgument(LikingService::class);
+
+$container->add(HistoryService::class, HistoryService::class)
+    ->addArguments([UserRepository::class, UserImageRepository::class, UserLikingRepository::class]);
+$container->add(HistoryController::class, HistoryController::class)
+    ->addArguments([HistoryService::class, TwigView::class]);
 
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $route) {
     $route->addRoute('GET', '/', [HomeController::class, 'homePage']);
-
     $route->addRoute('GET', '/registration', [RegistrationController::class, 'registrationPage']);
     $route->addRoute('POST', '/submit', [RegistrationController::class, 'submitUser']);
     $route->addRoute('GET', '/auth', [RegistrationController::class, 'registerUser']);
-
     $route->addRoute('POST', '/login', [AuthorizationController::class, 'authorization']);
-
     $route->addRoute('GET', '/user/{id:\d+}', [UserHomeController::class, 'userPage']);
-
     $route->addRoute('POST', '/logout', [LogoutController::class, 'logout']);
-
     $route->addRoute('POST', '/upload/{id:\d+}', [ImageUploadController::class, 'upload']);
-
-    $route->addRoute('GET', '/lookingFor', [LookController::class, 'lookingFor']);
+    $route->addRoute('GET', '/lookingFor/{id:\d+}', [LookController::class, 'lookingFor']);
+    $route->addRoute('POST', '/like/{id:\d+}', [LikingController::class, 'like']);
+    $route->addRoute('POST', '/dislike/{id:\d+}', [LikingController::class, 'dislike']);
+    $route->addRoute('GET', '/history', [HistoryController::class, 'history']);
 });
 
 
