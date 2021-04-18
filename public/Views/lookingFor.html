@@ -8,32 +8,93 @@
     <title>Document</title>
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class=" bg-gray-400">
 
-{{userID}}
-<br>
-{{name}}
-{{interestID}}
-{{personality}}
-{{gender}}
+<!-- Container -->
+<div class="container mx-auto">
 
-{% if userImage is null %}
-<img class="w-40" src="/{{image}}" alt="?">
-{% else %}
-<img class="w-40" src="/{{userImage}}" alt="?">
-{% endif%}
+    <div class="flex justify-center px-6 my-12">
 
-<form method="post" action="/dislike/{{userID}}">
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit" name="dislike" value="{{interestID}}"> Dislike
-    </button>
-</form>
+        <div class="w-full lg:w-1/2 bg-white p-5 rounded-lg ">
 
-<form method="post" action="/like/{{userID}}">
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit" name="like" value="{{interestID}}"> Like
-    </button>
-</form>
+            <div class="mt-6 flex justify-between items-center ">
+
+
+                {% if Nr < 2 %}
+                <form method="post" action="/previous/{{userID}}">
+                    <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit" name="{{interestID}}" value="{{Nr}}" disabled><
+                    </button>
+                </form>
+                {% endif%}
+
+                {% if Nr > 1 %}
+                <form method="post" action="/previous/{{userID}}">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit" name="{{interestID}}" value="{{Nr}}"><
+                    </button>
+                </form>
+                {% endif%}
+
+
+                {% if userImage is null %}
+                <img class="w-40" src="/{{image}}" alt="?">
+                {% else %}
+                <img class="w-40" src="/{{userImage}}" alt="?">
+                {% endif%}
+
+                {% if Nr > 2 %}
+                <form method="post" action="/next/{{userID}}">
+                    <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit" name="{{interestID}}" value="{{Nr}}" disabled> >
+                    </button>
+                </form>
+                {% endif%}
+
+                {% if Nr < 3 %}
+                <form method="post" action="/next/{{userID}}">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit" name="{{interestID}}" value="{{Nr}}"> >
+                    </button>
+                </form>
+                {% endif%}
+
+
+            </div>
+            <div>
+                {{name}}
+                {{interestID}}
+                {{personality}}
+                {{gender}}
+            </div>
+
+            <div class="mt-6">
+                <div class="flex justify-between items-center">
+                    <form method="post" action="/like/{{userID}}">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                type="submit" name="like" value="{{interestID}}"> Like
+                        </button>
+                    </form>
+
+
+                    <form method="post" action="/dislike/{{userID}}">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                type="submit" name="dislike" value="{{interestID}}"> Dislike
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <form method="get" action="/user/{{userID}}">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        type="submit" name="id" value="{{id}}"> Back
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
 
 </body>
 </html>

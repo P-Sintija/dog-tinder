@@ -5,15 +5,18 @@ namespace App\Template;
 use App\Models\User;
 use App\Models\UserCollection;
 use App\Models\UserImages;
+use App\Repositories\UserImageRepository;
 use Twig\Environment;
 
 class TwigView
 {
     private Environment $environment;
+    private UserImageRepository $imageRepository;
 
-    public function __construct(Environment $environment)
+    public function __construct(Environment $environment, UserImageRepository $imageRepository)
     {
         $this->environment = $environment;
+        $this->imageRepository = $imageRepository;
     }
 
     public function getEn(): Environment
@@ -41,7 +44,7 @@ class TwigView
         ];
     }
 
-    public function lookingForPage(User $user, User $interest, ?string $image): array
+    public function lookingForPage(User $user, User $interest, ?string $image, int $nr): array
     {
         return [
             'userID' => $user->getId(),
@@ -50,38 +53,45 @@ class TwigView
             'lookingFor' => $interest->getLookingFor(),
             'personality' => $interest->getPersonality(),
             'interestID' => $interest->getId(),
+            'Nr' => $nr,
             'userImage' => $image,
             'image' => 'storage/Images/private/none.jpg'//'Images/none.jpg'
         ];
     }
 
-    public function historyPage(UserCollection $likes, UserCollection $dislikes): array
+    public function submitErrors($name, $password): array
     {
-        $likedList = [];
-        foreach ($likes->getUsers() as $like) {
-            $likedList[] =
-                [
-                    'name' => $like->getName(),
-                    'personality' => $like->getPersonality(),
-                    'gender' => $like->getGender()
-                ];
-        }
-
-        $dislikedList = [];
-        foreach ($dislikes->getUsers() as $dislike) {
-            $dislikedList[] =
-                [
-                    'name' => $dislike->getName(),
-                    'personality' => $dislike->getPersonality(),
-                    'gender' => $dislike->getGender()
-                ];
-        }
-
-       return [
-            'like' => $likedList,
-            'dislike' => $dislikedList
+        return [
+            'nameError' => $name,
+            'passwordError' => $password
         ];
-
     }
+
+
+    public function historyPage(UserCollection $likes, UserCollection $dislikes, User $user): array
+    {
+        return [
+            'userID' => $user->getId(),
+            'like' => $this->userList($likes),
+            'dislike' => $this->userList($dislikes)
+        ];
+    }
+
+    private function userList(UserCollection $users): array
+    {
+        $userList = [];
+        foreach ($users->getUsers() as $user) {
+            $userList[] =
+                [
+                    'name' => $user->getName(),
+                    'personality' => $user->getPersonality(),
+                    'gender' => $user->getGender(),
+                    'userImage' => $this->imageRepository->searchUserImages('id', $user->getId())->getFirstImage(),
+                    'image' => 'Images/none.jpg'
+                ];
+        }
+        return $userList;
+    }
+
 
 }

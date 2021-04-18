@@ -20,22 +20,11 @@ class UserHomeController
 
     public function userPage(array $vars): void
     {
-        //todo if exixts
-        //todo chech if logged in
+        $user = $this->service->findUser('id', $vars['id']);
+        $images = $this->service->findImages('id', $vars['id']);
 
-        if ($this->service->findUser('id', (int)$vars['id'])->isLoggedIn()) {
-
-            $user = $this->service->findUser('id', $vars['id']);
-            $images = $this->service->findImages('id', $vars['id']);
-
-            echo $this->twig->getEn()->render(
-                'userPage.html', $this->twig->userPageInfo($user, $images));
-
-
-        } else {
-            var_dump('not logged in');
-        }
-
+        echo $this->twig->getEn()->render(
+            'userPage.html', $this->twig->userPageInfo($user, $images));
     }
 
 

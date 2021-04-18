@@ -29,7 +29,6 @@ class MySQLUserRepository implements UserRepository
             'gender' => $user->getGender(),
             'lookingFor' => $user->getLookingFor(),
             'personality' => $user->getPersonality(),
-            'loggedIn' => $user->isLoggedIn()
         ]);
     }
 
@@ -48,7 +47,6 @@ class MySQLUserRepository implements UserRepository
             $user['personality'],
             $user['gender'],
             $user['lookingFor'],
-            $user['loggedIn'],
             $user['id']
         );
     }
@@ -76,7 +74,6 @@ class MySQLUserRepository implements UserRepository
                     $user['personality'],
                     $user['gender'],
                     $user['lookingFor'],
-                    $user['loggedIn'],
                     $user['id']
                 ));
         }
@@ -96,13 +93,11 @@ class MySQLUserRepository implements UserRepository
                     $user['personality'],
                     $user['gender'],
                     $user['lookingFor'],
-                    $user['loggedIn'],
                     $user['id']
                 ));
         }
         return $searched;
     }
-
 
 
 }

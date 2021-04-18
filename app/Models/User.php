@@ -9,7 +9,6 @@ class User
     private string $personality;
     private string $gender;
     private string $lookingFor;
-    private bool $loggedIn;
     private ?int $id;
 
     public function __construct(
@@ -18,7 +17,6 @@ class User
         string $personality,
         string $gender,
         string $lookingFor,
-        bool $loggedIn = false,
         int $id = null)
     {
         $this->name = $name;
@@ -26,7 +24,6 @@ class User
         $this->personality = $personality;
         $this->gender = $gender;
         $this->lookingFor = $lookingFor;
-        $this->loggedIn =$loggedIn;
         $this->id = $id;
     }
 
@@ -58,11 +55,6 @@ class User
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function isLoggedIn(): bool
-    {
-        return $this->loggedIn;
     }
 
 }

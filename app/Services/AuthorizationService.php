@@ -24,10 +24,6 @@ class AuthorizationService
         return $this->userRepository->searchUser($key, $value);
     }
 
-    public function loginUser(User $user): void
-    {
-        $this->userRepository->edit($user, 'loggedIn','1');
-    }
 
     private function validatePassword(string $username, string $password): bool
     {

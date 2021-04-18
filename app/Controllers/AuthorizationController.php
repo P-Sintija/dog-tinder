@@ -17,16 +17,15 @@ class AuthorizationController
     {
         if ($this->service->userExists($_POST['username'], $_POST['password'])) {
 
-            echo 'user ' . $_POST['username'] . ' logged in';
+            $_SESSION['authId'] = $this->service->findUser('name', $_POST['username'])->getId();
 
             $link = $_SERVER['HTTP_ORIGIN'] .
                 '/user/' .
                 $this->service->findUser('name', $_POST['username'])->getId();
 
-            $this->service->loginUser($this->service->findUser('name', $_POST['username']));
             header('Location:' . $link);
         } else {
-            echo 'WRONG USERNAME OF PASSWORD';
+            echo 'WRONG USERNAME OR PASSWORD';
         }
 
     }

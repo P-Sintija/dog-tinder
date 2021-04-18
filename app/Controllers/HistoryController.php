@@ -25,7 +25,7 @@ class HistoryController
         $dislikes = $this->service->searchDislikes($user);
 
         echo $this->twig->getEn()->render(
-            'likeHistory.html', $this->twig->historyPage($likes, $dislikes)
+            'likeHistory.html', $this->twig->historyPage($likes, $dislikes, $user)
         );
 
     }

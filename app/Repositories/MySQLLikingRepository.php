@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\UserLiking;
-use App\Models\UserLikingCollection;
 use Medoo\Medoo;
 
 class MySQLLikingRepository implements UserLikingRepository

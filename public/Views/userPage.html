@@ -6,9 +6,11 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
     <title>Document</title>
 </head>
 <body>
+
 
 <div class="bg-gray-100 overflow-x-hidden">
 
@@ -72,7 +74,7 @@
                                 </button>
                             </form>
 
-                            <form method="get" action="/history">
+                            <form method="get" action="/history/{{id}}">
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                         type="submit" name="id" value="{{id}}">
                                     History
@@ -99,9 +101,9 @@
                         <div>
 
                             {% if first is null %}
-                            <img class="w-40" src="/{{image}}" alt="?">
+                            <img class=" w-40" src="/{{image}}" alt="?">
                             {% else %}
-                            <img class="w-40" src="/{{first}}" alt="?">
+                            <img class="w-40 rounded-md items-center" src="/{{first}}" alt="?">
                             {% endif%}
 
                             <form method="post" action="/upload/{{id}}" enctype="multipart/form-data">
@@ -119,7 +121,7 @@
                             <img class="w-40" src="/{{image}}" alt="?">
                             {% else %}
 
-                            <img class="w-40" src="/{{second}}" alt="?">
+                            <img class="w-40 rounded-md " src="/{{second}}" alt="?">
                             {% endif%}
 
                             <form method="post" action="/upload/{{id}}" enctype="multipart/form-data">
@@ -136,7 +138,7 @@
                             <img class="w-40" src="/{{image}}" alt="?">
                             {% else %}
 
-                            <img class="w-40" src="/{{third}}" alt="?">
+                            <img class="w-40 rounded-md" src="/{{third}}" alt="?">
                             {% endif%}
 
                             <form method="post" action="/upload/{{id}}" enctype="multipart/form-data">

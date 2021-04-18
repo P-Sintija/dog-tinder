@@ -19,16 +19,18 @@ class LookController
 
     public function lookingFor(array $vars): void
     {
-        var_dump($vars);
-        var_dump($_GET);
-       // $user = $this->service->getUser('id', $_GET['id']);
+
         $user = $this->service->getUser('id', $vars['id']);
         $interest = $this->service->getInterestUser($user);
 
-        $image = $this->service->getInterestsImage('id', $interest->getId());
+        if($interest != null) {
+            $image = $this->service->getInterestsImages('id', $interest->getId())->getFirstImage();
 
-        echo $this->twigView->getEn()->render(
-            'lookingFor.html', $this->twigView->lookingForPage($user, $interest, $image));
+            echo $this->twigView->getEn()->render(
+                'lookingFor.html', $this->twigView->lookingForPage($user, $interest, $image,1));
+        } else {
+            echo 'nothing to like ';
+        }
 
     }
 

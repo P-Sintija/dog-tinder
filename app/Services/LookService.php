@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserCollection;
 use App\Models\UserImages;
 use App\Repositories\UserImageRepository;
+use App\Repositories\UserLikingRepository;
 use App\Repositories\UserRepository;
 
 
@@ -13,11 +14,17 @@ class LookService
 {
     private UserRepository $userRepository;
     private UserImageRepository $imageRepository;
+    private UserLikingRepository $likingRepository;
 
-    public function __construct(UserRepository $userRepository, UserImageRepository $imageRepository)
+    public function __construct(
+        UserRepository $userRepository,
+        UserImageRepository $imageRepository,
+        UserLikingRepository $likingRepository
+    )
     {
         $this->userRepository = $userRepository;
         $this->imageRepository = $imageRepository;
+        $this->likingRepository = $likingRepository;
     }
 
     public function getUser(string $key, string $value): User
@@ -29,29 +36,27 @@ class LookService
     {
         $interests = new UserCollection();
         foreach ($this->getInterestsUsers($user)->getUsers() as $interest) {
-            if ($interest->getId() !== $user->getId()) {
+            if ($interest->getId() !== $user->getId()
+                && !in_array((string)$interest->getId(),
+                    explode(',', $this->likingRepository->search($user)->getLike()))
+                && !in_array((string)$interest->getId(),
+                    explode(',', $this->likingRepository->search($user)->getDislike()))
+            ) {
                 $interests->add($interest);
             }
         }
-        return $interests->getUsers()[rand(0, count($interests->getUsers()) - 1)];
-    }
 
-    public function getInterestsImage(string $key, string $value): ?string
-    {
-        $images = [
-            $this->getInterestsImages($key,$value)->getFirstImage(),
-            $this->getInterestsImages($key,$value)->getSecondImage(),
-            $this->getInterestsImages($key,$value)->getThirdImage()
-        ];
-
-        return $images[rand(0, count($images)-1)];
+        if(count($interests->getUsers())>0){
+            return $interests->getUsers()[rand(0, count($interests->getUsers()) - 1)];
+        } else {
+            return null;
+        }
 
     }
 
-
-    private function getInterestsImages(string $key, string $value): UserImages
+    public function getInterestsImages(string $key, string $value): UserImages
     {
-        return $this->imageRepository->searchUserImages($key,$value);
+        return $this->imageRepository->searchUserImages($key, $value);
     }
 
     private function getInterestsUsers(User $user): UserCollection
@@ -63,7 +68,6 @@ class LookService
         }
 
     }
-
 
 
 }

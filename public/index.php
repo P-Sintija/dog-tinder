@@ -3,12 +3,14 @@
 use App\Controllers\HistoryController;
 use App\Controllers\HomeController;
 use App\Controllers\AuthorizationController;
+use App\Controllers\ImageRotateController;
 use App\Controllers\LikingController;
 use App\Controllers\LogoutController;
 use App\Controllers\LookController;
 use App\Controllers\RegistrationController;
 use App\Controllers\ImageUploadController;
 use App\Controllers\UserHomeController;
+use App\Middlewares\AuthMiddleware;
 use App\Repositories\MySQLImageRepository;
 use App\Repositories\MySQLLikingRepository;
 use App\Repositories\MySQLUserRepository;
@@ -18,14 +20,17 @@ use App\Repositories\UserRepository;
 use App\Services\AuthorizationService;
 
 use App\Services\HistoryService;
+use App\Services\ImageRotateService;
 use App\Services\ImageUploadService;
 use App\Services\LikingService;
-use App\Services\LogoutUserService;
+
 use App\Services\LookService;
 use App\Services\RegisterUserService;
 use App\Services\UserService;
 use App\Template\TwigView;
 use App\Validations\ImageValidation;
+use App\Validations\SubmitError;
+use App\Validations\SubmitValidation;
 use League\Container\Container;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -40,12 +45,15 @@ $container = new Container;
 $container->add(Environment::class, Environment::class)
     ->addArgument(new FilesystemLoader('Views'));
 $container->add(TwigView::class,TwigView::class)
-    ->addArgument(Environment::class);
+    ->addArguments([Environment::class, UserImageRepository::class]);
 
 $container->add(UserRepository::class, MySQLUserRepository::class);
 $container->add(UserImageRepository::class, MySQLImageRepository::class);
 $container->add(UserLikingRepository::class, MySQLLikingRepository::class);
 
+$container->add(SubmitError::class, SubmitError::class);
+$container->add(SubmitValidation::class, SubmitValidation::class)
+    ->addArguments([UserRepository::class, SubmitError::class]);
 
 $container->add(HomeController::class, HomeController::class);
 $container->add(ImageValidation::class,ImageValidation::class);
@@ -53,17 +61,15 @@ $container->add(ImageValidation::class,ImageValidation::class);
 $container->add(RegisterUserService::class, RegisterUserService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class, UserLikingRepository::class]);
 $container->add(RegistrationController::class, RegistrationController::class)
-    ->addArguments([RegisterUserService::class, TwigView::class]);
+    ->addArguments([RegisterUserService::class, TwigView::class, SubmitValidation::class]);
 
 $container->add(AuthorizationService::class, AuthorizationService::class)
     ->addArgument(UserRepository::class);
 $container->add(AuthorizationController::class, AuthorizationController::class)
     ->addArgument(AuthorizationService::class);
 
-$container->add(LogoutUserService::class, LogoutUserService::class)
-    ->addArgument(UserRepository::class);
-$container->add(LogoutController::class, LogoutController::class)
-    ->addArgument(LogoutUserService::class);
+$container->add(LogoutController::class, LogoutController::class);
+
 
 $container->add(UserService::class, UserService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class]);
@@ -76,7 +82,7 @@ $container->add(ImageUploadController::class, ImageUploadController::class)
 ->addArguments([ImageUploadService::class, ImageValidation::class]);
 
 $container->add(LookService::class, LookService::class)
-    ->addArguments([UserRepository::class, UserImageRepository::class]);
+    ->addArguments([UserRepository::class, UserImageRepository::class, UserLikingRepository::class]);
 $container->add(LookController::class, LookController::class)
     ->addArguments([LookService::class, TwigView::class]);
 
@@ -89,6 +95,22 @@ $container->add(HistoryService::class, HistoryService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class, UserLikingRepository::class]);
 $container->add(HistoryController::class, HistoryController::class)
     ->addArguments([HistoryService::class, TwigView::class]);
+
+$container->add(ImageRotateService::class, ImageRotateService::class)
+    ->addArguments([UserRepository::class, UserImageRepository::class]);
+$container->add(ImageRotateController::class, ImageRotateController::class)
+    ->addArguments([ImageRotateService::class, TwigView::class]);
+
+
+$middlewares = [
+//    UserHomeController::class . '@userPage' => [
+//        AuthMiddleware::class
+//    ],
+    HistoryController::class .  '@history' => [
+        AuthMiddleware::class
+    ]
+];
+
 
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $route) {
@@ -103,7 +125,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
     $route->addRoute('GET', '/lookingFor/{id:\d+}', [LookController::class, 'lookingFor']);
     $route->addRoute('POST', '/like/{id:\d+}', [LikingController::class, 'like']);
     $route->addRoute('POST', '/dislike/{id:\d+}', [LikingController::class, 'dislike']);
-    $route->addRoute('GET', '/history', [HistoryController::class, 'history']);
+    $route->addRoute('GET', '/history/{id:\d+}', [HistoryController::class, 'history']);
+    $route->addRoute('POST', '/previous/{id:\d+}', [ImageRotateController::class, 'previous']);
+    $route->addRoute('POST', '/next/{id:\d+}', [ImageRotateController::class, 'next']);
 });
 
 
@@ -130,6 +154,15 @@ switch ($routeInfo[0]) {
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
         [$controller, $method] = $handler;
+
+        $middlewareKey = $controller . '@' . $method;
+        $controllerMiddlewares = $middlewares[$middlewareKey] ?? [];
+
+        foreach ($controllerMiddlewares as $controllerMiddleware){
+            (new $controllerMiddleware)->handle($vars);
+        }
+
+
         $container->get($controller)->$method($vars);
         break;
 }
