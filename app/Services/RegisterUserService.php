@@ -34,6 +34,7 @@ class RegisterUserService
     public function saveNewUser(User $user): void
     {
         $this->userRepository->save($user);
+
         $user = $this->userRepository->searchUser('name', $user->getName());
         $this->imageRepository->save($user);
         $this->likingRepository->save($user);

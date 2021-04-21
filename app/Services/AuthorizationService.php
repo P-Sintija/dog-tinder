@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
+use App\Requests\AuthorizationRequest;
 
 class AuthorizationService
 {
@@ -14,18 +15,18 @@ class AuthorizationService
         $this->userRepository = $userRepository;
     }
 
-    public function userExists(string $username, string $password): bool
-    {
-        return $this->userRepository->has($username) && $this->validatePassword($username, $password);
-    }
-
     public function findUser(string $key, string $value): User
     {
         return $this->userRepository->searchUser($key, $value);
     }
 
+    public function userExists(AuthorizationRequest $request): bool
+    {
+        return $this->userRepository->has($request->getUsername()) &&
+            $this->verifyPassword($request->getUsername(), $request->getPassword());
+    }
 
-    private function validatePassword(string $username, string $password): bool
+    private function verifyPassword(string $username, string $password): bool
     {
        return password_verify($password, $this->userRepository->searchUser('name', $username)->getHash());
     }

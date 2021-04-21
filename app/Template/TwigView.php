@@ -37,10 +37,9 @@ class TwigView
             'lookingFor' => $user->getLookingFor(),
             'personality' => $user->getPersonality(),
             'id' => $user->getId(),
-            'first' => $images->getFirstImage(),
+            'first' =>  $images->getFirstImage(),
             'second' => $images->getSecondImage(),
             'third' => $images->getThirdImage(),
-            'image' => 'Images/none.jpg'
         ];
     }
 
@@ -55,15 +54,15 @@ class TwigView
             'interestID' => $interest->getId(),
             'Nr' => $nr,
             'userImage' => $image,
-            'image' => 'storage/Images/private/none.jpg'//'Images/none.jpg'
         ];
     }
 
-    public function submitErrors($name, $password): array
+    public function submitErrors($name, $password, $personality): array
     {
         return [
             'nameError' => $name,
-            'passwordError' => $password
+            'passwordError' => $password,
+            'personalityError' => $personality
         ];
     }
 
@@ -83,11 +82,11 @@ class TwigView
         foreach ($users->getUsers() as $user) {
             $userList[] =
                 [
+                    'id' => $user->getId(),
                     'name' => $user->getName(),
                     'personality' => $user->getPersonality(),
                     'gender' => $user->getGender(),
                     'userImage' => $this->imageRepository->searchUserImages('id', $user->getId())->getFirstImage(),
-                    'image' => 'Images/none.jpg'
                 ];
         }
         return $userList;

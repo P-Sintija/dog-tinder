@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Requests\AuthorizationRequest;
 use App\Services\AuthorizationService;
 
 class AuthorizationController
@@ -15,19 +16,19 @@ class AuthorizationController
 
     public function authorization(): void
     {
-        if ($this->service->userExists($_POST['username'], $_POST['password'])) {
+        $request = new AuthorizationRequest($_POST['username'], $_POST['password']);
+        if ($this->service->userExists($request)) {
 
-            $_SESSION['authId'] = $this->service->findUser('name', $_POST['username'])->getId();
+            $user = $this->service->findUser('name', $request->getUsername());
+            $_SESSION['authId'] = $user->getId();
 
-            $link = $_SERVER['HTTP_ORIGIN'] .
-                '/user/' .
-                $this->service->findUser('name', $_POST['username'])->getId();
-
+            $link = $_SERVER['HTTP_ORIGIN'] . '/user/' . $user->getId();
             header('Location:' . $link);
+
         } else {
+
             echo 'WRONG USERNAME OR PASSWORD';
         }
-
     }
 
 

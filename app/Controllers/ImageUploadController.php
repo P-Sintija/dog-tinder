@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 
-use App\Models\ImagePaths;
+use App\Requests\ImageRequest;
 use App\Services\ImageUploadService;
 use App\Validations\ImageValidation;
 
@@ -22,10 +22,10 @@ class ImageUploadController
 
     public function upload(array $vars): void
     {
+
         if (isset($_POST['upload'])) {
 
-            $image = $_FILES['image'];
-            $fileExtension = explode('.', $image['name']);
+            $fileExtension = explode('.', $_FILES['image']['name']);
             $fileExtensionLowercase = strtolower(end($fileExtension));
             $allowedExtensions = [
                 'jpg',
@@ -38,7 +38,8 @@ class ImageUploadController
                 $this->validation->checkUploadError($_FILES['image']['error'])/* &&
                 $this->validation->checkFileSize($_FILES['image']['size'], 6000000)*/) {
 
-                $this->service->uploadImage(new ImagePaths(
+                $this->service->uploadImage(new ImageRequest(
+                    $_FILES['image']['name'],
                     $fileExtensionLowercase,
                     $_FILES['image']['tmp_name'],
                     (int)$vars['id'],
@@ -48,8 +49,7 @@ class ImageUploadController
 
         }
 
-        $link = $_SERVER['HTTP_ORIGIN'] .
-            '/user/' . $vars['id'];
+        $link = $_SERVER['HTTP_ORIGIN'] . '/user/' . $vars['id'];
 
         header('Location:' . $link);
 

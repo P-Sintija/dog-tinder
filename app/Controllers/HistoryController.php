@@ -19,15 +19,12 @@ class HistoryController
     public function history(): void
     {
         $user = $this->service->getUser('id', $_GET['id']);
-
         $likes = $this->service->searchLikes($user);
-
         $dislikes = $this->service->searchDislikes($user);
 
         echo $this->twig->getEn()->render(
             'likeHistory.html', $this->twig->historyPage($likes, $dislikes, $user)
         );
-
     }
 
 }

@@ -1,26 +1,33 @@
 <?php
 
-namespace App\Models;
+namespace App\Requests;
 
-class ImagePaths
+class ImageRequest
 {
+    private string $originalName;
     private string $fileExtension;
     private string $temporaryLocation;
     private int $id;
     private string $key;
 
     public function __construct(
+        string $originalName,
         string $fileExtension,
         string $temporaryLocation,
         int $id,
         string $key)
     {
+        $this->originalName = $originalName;
         $this->fileExtension = $fileExtension;
         $this->temporaryLocation = $temporaryLocation;
         $this->id = $id;
         $this->key = $key;
     }
 
+    public function getOriginalName(): string
+    {
+        return $this->originalName;
+    }
 
     public function getFileExtension(): string
     {

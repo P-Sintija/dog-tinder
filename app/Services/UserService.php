@@ -27,6 +27,4 @@ class UserService
     {
         return $this->imageRepository->searchUserImages($key, $value);
     }
-
-
 }

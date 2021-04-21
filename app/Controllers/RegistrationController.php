@@ -2,22 +2,23 @@
 
 namespace App\Controllers;
 
+use App\Requests\SubmissionRequest;
 use App\Services\RegisterUserService;
 use App\Models\User;
 use App\Template\TwigView;
-use App\Validations\SubmitValidation;
+use App\Validations\SubmissionValidation;
 
 
 class RegistrationController
 {
     private RegisterUserService $service;
     private TwigView $twig;
-    private SubmitValidation $validation;
+    private SubmissionValidation $validation;
 
     public function __construct(
         RegisterUserService $service,
         TwigView $twig,
-        SubmitValidation $validation)
+        SubmissionValidation $validation)
     {
         $this->service = $service;
         $this->twig = $twig;
@@ -30,14 +31,20 @@ class RegistrationController
             'submit.html',
             $this->twig->submitErrors(
                 $this->validation->getNameError(),
-                $this->validation->getPasswordError()));
+                $this->validation->getPasswordError(),
+                $this->validation->getPersonalityError()
+            ));
     }
 
 
     public function submitUser(): void
     {
+        if ($this->validation->validateSubmission(new SubmissionRequest(
+            $_POST['name'],
+            $_POST['password'],
+            $_POST['personality']
+        ))) {
 
-        if ($this->validation->validateSubmission($_POST['name'], $_POST['password'])) {
             $_SESSION['new_user'] = [
                 'name' => $_POST['name'],
                 'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
@@ -55,16 +62,17 @@ class RegistrationController
             ));
 
             echo $this->twig->getEn()->render('registration.html', $this->twig->linkInfo($link));
+
         } else {
 
             echo $this->twig->getEn()->render(
                 'submit.html',
                 $this->twig->submitErrors(
                     $this->validation->getNameError(),
-                    $this->validation->getPasswordError()));
+                    $this->validation->getPasswordError(),
+                    $this->validation->getPersonalityError()
+                ));
         }
-
-
     }
 
     public function registerUser(): void
@@ -79,6 +87,4 @@ class RegistrationController
         unset($_SESSION['new_user']);
         header('Location:/');
     }
-
-
 }

@@ -10,7 +10,7 @@ use App\Repositories\UserLikingRepository;
 use App\Repositories\UserRepository;
 
 
-class LookService
+class LookingForService
 {
     private UserRepository $userRepository;
     private UserImageRepository $imageRepository;
@@ -51,13 +51,13 @@ class LookService
         } else {
             return null;
         }
-
     }
 
     public function getInterestsImages(string $key, string $value): UserImages
     {
         return $this->imageRepository->searchUserImages($key, $value);
     }
+
 
     private function getInterestsUsers(User $user): UserCollection
     {

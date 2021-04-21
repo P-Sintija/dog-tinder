@@ -2,10 +2,11 @@
 
 namespace App\Validations;
 
-class SubmitError
+class SubmissionError
 {
     private string $name = '';
     private string $password = '';
+    private string $personality = '';
 
     public function setNameError(string $error): void
     {
@@ -25,5 +26,15 @@ class SubmitError
     public function getPasswordError(): string
     {
         return $this->password;
+    }
+
+    public function setPersonalityError(string $error): void
+    {
+        $this->personality = $error;
+    }
+
+    public function getPersonalityError(): string
+    {
+        return $this->personality;
     }
 }
