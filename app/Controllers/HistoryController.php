@@ -3,17 +3,21 @@
 namespace App\Controllers;
 
 use App\Services\HistoryService;
-use App\Template\TwigView;
+
+use App\ViewContent\Content;
+use Template;
 
 class HistoryController
 {
     private HistoryService $service;
-    private TwigView $twig;
+    private Content $content;
+    private Template $view;
 
-    public function __construct(HistoryService $service, TwigView $twig)
+    public function __construct(HistoryService $service, Content $content, Template $view)
     {
         $this->service = $service;
-        $this->twig = $twig;
+        $this->content = $content;
+        $this->view = $view;
     }
 
     public function history(): void
@@ -22,8 +26,8 @@ class HistoryController
         $likes = $this->service->searchLikes($user);
         $dislikes = $this->service->searchDislikes($user);
 
-        echo $this->twig->getEn()->render(
-            'likeHistory.html', $this->twig->historyPage($likes, $dislikes, $user)
+        echo $this->view->view(
+            'likeHistory.html', $this->content->historyPage($likes, $dislikes, $user)
         );
     }
 

@@ -51,5 +51,9 @@ class MySQLImageRepository implements UserImageRepository
         ], $where);
     }
 
+    public function has(string $key, string $value): bool
+    {
+        return $this->database->has('images', [$key => $value]);
+    }
 
 }

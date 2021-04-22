@@ -5,39 +5,41 @@ namespace App\Controllers;
 use App\Requests\SubmissionRequest;
 use App\Services\RegisterUserService;
 use App\Models\User;
-use App\Template\TwigView;
 use App\Validations\SubmissionValidation;
-
+use App\ViewContent\Content;
+use Template;
 
 class RegistrationController
 {
     private RegisterUserService $service;
-    private TwigView $twig;
     private SubmissionValidation $validation;
+    private Content $content;
+    private Template $view;
 
     public function __construct(
         RegisterUserService $service,
-        TwigView $twig,
-        SubmissionValidation $validation)
+        SubmissionValidation $validation,
+        Content $content,
+        Template $view
+    )
     {
         $this->service = $service;
-        $this->twig = $twig;
         $this->validation = $validation;
+        $this->content = $content;
+        $this->view = $view;
     }
 
-    public function registrationPage(): void
+    public function registrationPage(): string
     {
-        echo $this->twig->getEn()->render(
-            'submit.html',
-            $this->twig->submitErrors(
-                $this->validation->getNameError(),
-                $this->validation->getPasswordError(),
-                $this->validation->getPersonalityError()
-            ));
+        return $this->view->view('submit.html', $this->content->submitErrors(
+            $this->validation->getNameError(),
+            $this->validation->getPasswordError(),
+            $this->validation->getPersonalityError()
+        ));
     }
 
 
-    public function submitUser(): void
+    public function submitUser(): string
     {
         if ($this->validation->validateSubmission(new SubmissionRequest(
             $_POST['name'],
@@ -61,13 +63,13 @@ class RegistrationController
                 $_SESSION['new_user']['lookingFor'],
             ));
 
-            echo $this->twig->getEn()->render('registration.html', $this->twig->linkInfo($link));
+            return $this->view->view('registration.html', $this->content->linkInfo($link));
 
         } else {
 
-            echo $this->twig->getEn()->render(
+            return $this->view->view(
                 'submit.html',
-                $this->twig->submitErrors(
+                $this->content->submitErrors(
                     $this->validation->getNameError(),
                     $this->validation->getPasswordError(),
                     $this->validation->getPersonalityError()

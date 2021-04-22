@@ -4,28 +4,35 @@ namespace App\Controllers;
 
 
 use App\Services\UserService;
-use App\Template\TwigView;
+
+use App\ViewContent\Content;
+
+
+use Template;
 
 
 class UserHomeController
 {
     private UserService $service;
-    private TwigView $twig;
+    private Content $content;
+    private Template $view;
 
-    public function __construct(UserService $service, TwigView $twig)
+    public function __construct(
+        UserService $service,
+        Content $content,
+        Template $view
+    )
     {
         $this->service = $service;
-        $this->twig = $twig;
+        $this->content = $content;
+        $this->view = $view;
     }
 
-    public function userPage(array $vars): void
+
+    public function userPage(array $vars): string
     {
         $user = $this->service->findUser('id', $vars['id']);
         $images = $this->service->findImages('id', $vars['id']);
-
-        echo $this->twig->getEn()->render(
-            'userPage.html', $this->twig->userPageInfo($user, $images));
+        return $this->view->view('userPage.html', $this->content->userPageInfo($user, $images));
     }
-
-
 }

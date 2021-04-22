@@ -1,27 +1,34 @@
 <?php
 
-namespace App\Template;
+namespace App\ViewContent;
 
 use App\Models\User;
 use App\Models\UserCollection;
 use App\Models\UserImages;
 use App\Repositories\UserImageRepository;
-use Twig\Environment;
 
-class TwigView
+
+class Content
 {
-    private Environment $environment;
     private UserImageRepository $imageRepository;
 
-    public function __construct(Environment $environment, UserImageRepository $imageRepository)
+    public function __construct(UserImageRepository $imageRepository)
     {
-        $this->environment = $environment;
+
         $this->imageRepository = $imageRepository;
     }
 
-    public function getEn(): Environment
+    public function nothingToLike(User $user, string $message): array
     {
-        return $this->environment;
+        return [
+            'message' => $message,
+            'userID' => $user->getId(),
+        ];
+    }
+
+    public function homePage(string $authorization): array
+    {
+        return ['status' => $authorization];
     }
 
     public function linkInfo(string $link): array
@@ -37,13 +44,13 @@ class TwigView
             'lookingFor' => $user->getLookingFor(),
             'personality' => $user->getPersonality(),
             'id' => $user->getId(),
-            'first' =>  $images->getFirstImage(),
+            'first' => $images->getFirstImage(),
             'second' => $images->getSecondImage(),
             'third' => $images->getThirdImage(),
         ];
     }
 
-    public function lookingForPage(User $user, User $interest, ?string $image, int $nr): array
+    public function lookingForPage(User $user, User $interest, ?string $image): array
     {
         return [
             'userID' => $user->getId(),
@@ -52,8 +59,9 @@ class TwigView
             'lookingFor' => $interest->getLookingFor(),
             'personality' => $interest->getPersonality(),
             'interestID' => $interest->getId(),
-            'Nr' => $nr,
             'userImage' => $image,
+            'firstImage' => $this->imageRepository->searchUserImages('id', $interest->getId())->getFirstImage(),
+            'lastImage' => $this->imageRepository->searchUserImages('id', $interest->getId())->getThirdImage()
         ];
     }
 

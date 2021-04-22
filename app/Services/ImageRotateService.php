@@ -23,8 +23,25 @@ class ImageRotateService
         return $this->userRepository->searchUser($key, $value);
     }
 
-    public function getInterestsImages(string $key, string $value): UserImages
+//    public function getInterestsImages(string $key, string $value): UserImages
+//    {
+//        return $this->imageRepository->searchUserImages($key, $value);
+//    }
+
+    public function nextImage(User $interest, string $image): string
     {
-        return $this->imageRepository->searchUserImages($key, $value);
+        if ($this->imageRepository->has('first_preview', '/storage/preview-pictures/' . $interest->getId() . '/' . $image)) {
+            return $this->imageRepository->searchUserImages('id', $interest->getId())->getSecondImage();
+        }
+        return $this->imageRepository->searchUserImages('id', $interest->getId())->getThirdImage();
     }
+
+    public function previousImage(User $interest, string $image): string
+    {
+        if ($this->imageRepository->has('third_preview', '/storage/preview-pictures/' . $interest->getId() . '/' . $image)) {
+            return $this->imageRepository->searchUserImages('id', $interest->getId())->getSecondImage();
+        }
+        return $this->imageRepository->searchUserImages('id', $interest->getId())->getFirstImage();
+    }
+
 }

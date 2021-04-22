@@ -3,35 +3,36 @@
 namespace App\ Controllers;
 
 use App\Services\LookingForService;
-use App\Template\TwigView;
+use App\ViewContent\Content;
+use Template;
 
 
 class LookingForController
 {
     private LookingForService $service;
-    private TwigView $twigView;
+    private Content $content;
+    private Template $view;
 
-    public function __construct(LookingForService $service, TwigView $twigView)
+    public function __construct(LookingForService $service, Content $content, Template $view)
     {
         $this->service = $service;
-        $this->twigView = $twigView;
+        $this->content = $content;
+        $this->view = $view;
     }
 
-    public function lookingFor(array $vars): void
+    public function lookingFor(array $vars): string
     {
         $user = $this->service->getUser('id', $vars['id']);
         $interest = $this->service->getInterestUser($user);
 
-        if($interest != null) {
+        if ($interest != null) {
             $image = $this->service->getInterestsImages('id', $interest->getId())->getFirstImage();
-
-            echo $this->twigView->getEn()->render(
-                'lookingFor.html', $this->twigView->lookingForPage($user, $interest, $image,1));
-
-        } else {
-            echo 'nothing to like ';
+            return $this->view->view(
+                'lookingFor.html', $this->content->lookingForPage($user, $interest, $image));
         }
-
+        return $this->view->view(
+            'lookingFor.html', $this->content->nothingToLike(
+            $user, 'Sorry! No body to smell!'));
     }
 
 }

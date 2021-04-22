@@ -10,24 +10,28 @@
 </head>
 <body class=" bg-gray-400">
 
+{% if message is null %}
+
 <!-- Container -->
 <div class="container mx-auto">
     <div class="flex justify-center px-6 my-12">
         <div class="w-full lg:w-1/2 bg-white p-5 rounded-lg ">
 
             <div class="mt-6 flex justify-between items-center ">
-                {% if Nr < 2 %}
+                {% if firstImage == userImage %}
                 <form method="post" action="/previous/{{userID}}">
-                    <button class="bg-red-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="submit" name="{{interestID}}" value="{{Nr}}" disabled><
+                    <button class="bg-red-100 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit" name="{{interestID}}"
+                            value="{{userImage}}" disabled><
                     </button>
                 </form>
                 {% endif%}
 
-                {% if Nr > 1 %}
+                {% if firstImage != userImage %}
                 <form method="post" action="/previous/{{userID}}">
                     <button class="bg-red-500 hover:bg-red-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="submit" name="{{interestID}}" value="{{Nr}}"><
+                            type="submit" name="{{interestID}}"
+                            value="{{userImage}}"><
                     </button>
                 </form>
                 {% endif%}
@@ -38,18 +42,21 @@
                 <img class="w-10/12 rounded-lg" src="/pictures/{{interestID}}/{{userImage}}" alt="?">
                 {% endif%}
 
-                {% if Nr > 2 %}
+                {% if lastImage == userImage %}
                 <form method="post" action="/next/{{userID}}">
                     <button class="bg-red-100 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="submit" name="{{interestID}}" value="{{Nr}}" disabled> >
+                            type="submit" name="{{interestID}}"
+                            value="{{userImage}}"
+                            disabled> >
                     </button>
                 </form>
                 {% endif%}
 
-                {% if Nr < 3 %}
+                {% if lastImage != userImage %}
                 <form method="post" action="/next/{{userID}}">
                     <button class="bg-red-500 hover:bg-red-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="submit" name="{{interestID}}" value="{{Nr}}"> >
+                            type="submit" name="{{interestID}}"
+                            value="{{userImage}}">>
                     </button>
                 </form>
                 {% endif%}
@@ -97,6 +104,26 @@
 
         </div>
     </div>
+</div>
 
+{% else %}
+
+<div class="flex justify-center px-6 my-12">
+    <div class="w-full lg:w-1/2 bg-white p-5 rounded-lg">
+        <h1 class="text-4xl font-bold text-red-900 text-center">
+            {{message}}
+        </h1>
+
+        <div class="m-3 pt-12">
+            <form class="py-2"
+                  method="get" action="/user/{{userID}}">
+                <button class="focus:outline-none text-red-600 font-bold py-2 px-4 rounded-md border border-red-600 hover:bg-red-50"
+                        type="submit" name="id" value="{{id}}"> Back
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif%}
 </body>
 </html>
