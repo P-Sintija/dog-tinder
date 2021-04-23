@@ -28,7 +28,7 @@ class AuthorizationService
 
     private function verifyPassword(string $username, string $password): bool
     {
-       return password_verify($password, $this->userRepository->searchUser('name', $username)->getHash());
+        return password_verify($password, $this->userRepository->searchUser('name', $username)->getHash());
     }
 
 }

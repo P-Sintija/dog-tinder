@@ -38,9 +38,9 @@ class SubmissionValidation
             $this->validatePersonality($request->getPersonality());
     }
 
+
     private function validateName(string $name): bool
     {
-
         if ($this->userRepository->has($name)) {
             $this->error->setNameError('name already exists');
         }

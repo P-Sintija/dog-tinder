@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\DeleteImageController;
 use App\Controllers\HistoryController;
 use App\Controllers\HomeController;
 use App\Controllers\AuthorizationController;
@@ -32,16 +33,15 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
     $route->addRoute('GET', '/auth', [RegistrationController::class, 'registerUser']);
     $route->addRoute('POST', '/login', [AuthorizationController::class, 'authorization']);
     $route->addRoute('GET', '/user/{id:\d+}', [UserHomeController::class, 'userPage']);
-
     $route->addRoute('GET', '/lookingFor/{id:\d+}', [LookingForController::class, 'lookingFor']);
     $route->addRoute('POST', '/like/{id:\d+}', [LikingController::class, 'like']);
     $route->addRoute('POST', '/dislike/{id:\d+}', [LikingController::class, 'dislike']);
     $route->addRoute('GET', '/history/{id:\d+}', [HistoryController::class, 'history']);
     $route->addRoute('POST', '/logout', [LogoutController::class, 'logout']);
-
     $route->addRoute('POST', '/upload/{id:\d+}', [ImageUploadController::class, 'upload']);
     $route->addRoute('POST', '/previous/{id:\d+}', [ImageRotateController::class, 'previous']);
     $route->addRoute('POST', '/next/{id:\d+}', [ImageRotateController::class, 'next']);
+    $route->addRoute('POST', '/delete/{id:\d+}', [DeleteImageController::class, 'delete']);
 
 });
 

@@ -9,6 +9,7 @@ use Medoo\Medoo;
 class MySQLLikingRepository implements UserLikingRepository
 {
     private Medoo $database;
+    const TABLE_NAME = 'likes_dislikes';
 
     public function __construct()
     {
@@ -23,7 +24,7 @@ class MySQLLikingRepository implements UserLikingRepository
 
     public function save(User $user): void
     {
-        $this->database->insert('likes_dislikes', [
+        $this->database->insert(self::TABLE_NAME, [
             'id' => $user->getId(),
         ]);
     }
@@ -33,20 +34,20 @@ class MySQLLikingRepository implements UserLikingRepository
         $where = [
             'id' => $user->getId()];
 
-        if ($this->database->select('likes_dislikes', $key, $where)[0] !== null) {
-            $newValue = $this->database->select('likes_dislikes', $key, $where)[0] . ',' . $value;
+        if ($this->database->select(self::TABLE_NAME, $key, $where)[0] !== null) {
+            $newValue = $this->database->select(self::TABLE_NAME, $key, $where)[0] . ',' . $value;
         } else {
             $newValue = $value;
         }
 
-        $this->database->update('likes_dislikes', [
+        $this->database->update(self::TABLE_NAME, [
             $key => $newValue
         ], $where);
     }
 
     public function search(User $user): UserLiking
     {
-        $data = $this->database->select('likes_dislikes', '*', ['id' => $user->getId()])[0];
+        $data = $this->database->select(self::TABLE_NAME, '*', ['id' => $user->getId()])[0];
         return new UserLiking(
             $data['id'],
             $data['likes'],

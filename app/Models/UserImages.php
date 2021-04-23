@@ -16,6 +16,11 @@ class UserImages
         $this->third = $third;
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getFirstImage(): ?string
     {
         return $this->first;

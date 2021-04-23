@@ -32,7 +32,7 @@ class LookingForController
         }
         return $this->view->view(
             'lookingFor.html', $this->content->nothingToLike(
-            $user, 'Sorry! No body to smell!'));
+            $user, 'Sorry! Nobody to smell!'));
     }
 
 }

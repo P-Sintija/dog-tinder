@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\DeleteImageController;
 use App\Controllers\HistoryController;
 use App\Controllers\HomeController;
 use App\Controllers\AuthorizationController;
@@ -19,6 +20,7 @@ use App\Repositories\UserLikingRepository;
 use App\Repositories\UserRepository;
 
 use App\Services\AuthorizationService;
+use App\Services\DeleteImageService;
 use App\Services\HistoryService;
 use App\Services\ImageRotateService;
 use App\Services\ImageUploadService;
@@ -28,13 +30,16 @@ use App\Services\RegisterUserService;
 use App\Services\UserService;
 
 use App\Validations\ImageValidation;
+use App\Validations\ImageValidationErrors;
 use App\Validations\SubmissionError;
 use App\Validations\SubmissionValidation;
 
 use App\ViewContent\Content;
 use League\Container\Container;
+use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+
 
 
 $container = new Container;
@@ -47,7 +52,7 @@ $container->add(RegistrationController::class, RegistrationController::class)
 $container->add(AuthorizationController::class, AuthorizationController::class)
     ->addArguments([AuthorizationService::class, Content::class, Template::class]);
 $container->add(UserHomeController::class, UserHomeController::class)
-    ->addArguments([UserService::class, Content::class, Template::class]);
+    ->addArguments([UserService::class, Content::class, Template::class, ImageValidation::class]);
 $container->add(LookingForController::class, LookingForController::class)
     ->addArguments([LookingForService::class, Content::class, Template::class]);
 $container->add(LikingController::class, LikingController::class)
@@ -56,22 +61,26 @@ $container->add(HistoryController::class, HistoryController::class)
     ->addArguments([HistoryService::class, Content::class, Template::class]);
 $container->add(LogoutController::class, LogoutController::class);
 $container->add(ImageUploadController::class, ImageUploadController::class)
-    ->addArguments([ImageUploadService::class, ImageValidation::class]);
+    ->addArguments([ImageUploadService::class, ImageValidation::class,UserService::class, Content::class, Template::class]);
 $container->add(ImageRotateController::class, ImageRotateController::class)
     ->addArguments([ImageRotateService::class, Content::class, Template::class]);
+$container->add(DeleteImageController::class, DeleteImageController::class)
+    ->addArgument(DeleteImageService::class);
 
 //////// validations ////////
 $container->add(SubmissionError::class, SubmissionError::class);
 $container->add(SubmissionValidation::class, SubmissionValidation::class)
     ->addArguments([UserRepository::class, SubmissionError::class]);
-$container->add(ImageValidation::class,ImageValidation::class);
+$container->add(FinfoMimeTypeDetector::class,FinfoMimeTypeDetector::class);
+$container->add(ImageValidationErrors::class, ImageValidationErrors::class);
+$container->add(ImageValidation::class,ImageValidation::class)
+->addArguments([FinfoMimeTypeDetector::class, ImageValidationErrors::class]);
 
 //////// services ///////////
 $container->add(RegisterUserService::class, RegisterUserService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class, UserLikingRepository::class]);
 $container->add(AuthorizationService::class, AuthorizationService::class)
     ->addArgument(UserRepository::class);
-
 $container->add(UserService::class, UserService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class]);
 $container->add(LookingForService::class, LookingForService::class)
@@ -84,6 +93,8 @@ $container->add(ImageUploadService::class, ImageUploadService::class)
     ->addArgument(UserImageRepository::class);
 $container->add(ImageRotateService::class, ImageRotateService::class)
     ->addArguments([UserRepository::class, UserImageRepository::class]);
+$container->add(DeleteImageService::class, DeleteImageService::class)
+    ->addArgument(UserImageRepository::class);
 
 //////// repositories ///////
 $container->add(UserRepository::class, MySQLUserRepository::class);

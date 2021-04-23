@@ -46,7 +46,7 @@ class LookingForService
             }
         }
 
-        if(count($interests->getUsers())>0){
+        if (count($interests->getUsers()) > 0) {
             return $interests->getUsers()[rand(0, count($interests->getUsers()) - 1)];
         } else {
             return null;
@@ -66,7 +66,6 @@ class LookingForService
         } else {
             return $this->userRepository->searchUsers('gender', $user->getLookingFor());
         }
-
     }
 
 

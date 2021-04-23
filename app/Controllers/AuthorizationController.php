@@ -33,7 +33,6 @@ class AuthorizationController
 
             $link = $_SERVER['HTTP_ORIGIN'] . '/user/' . $user->getId();
             header('Location:' . $link);
-
         }
         return $this->view->view('home.html', $this->content->homePage(
             'wrong user name or password'));

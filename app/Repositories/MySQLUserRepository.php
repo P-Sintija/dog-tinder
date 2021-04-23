@@ -9,6 +9,7 @@ use Medoo\Medoo;
 class MySQLUserRepository implements UserRepository
 {
     private Medoo $database;
+    const TABLE_NAME = 'users';
 
     public function __construct()
     {
@@ -23,7 +24,7 @@ class MySQLUserRepository implements UserRepository
 
     public function save(User $user): void
     {
-        $this->database->insert('users', [
+        $this->database->insert(self::TABLE_NAME, [
             'name' => $user->getName(),
             'hash' => $user->getHash(),
             'gender' => $user->getGender(),
@@ -35,12 +36,12 @@ class MySQLUserRepository implements UserRepository
     public function has(string $username): bool
     {
         $where = ['name' => $username];
-        return $this->database->has('users', $where);
+        return $this->database->has(self::TABLE_NAME, $where);
     }
 
     public function searchUser(string $key, string $value): User
     {
-      $user = $this->database->select('users','*',[$key => $value])[0];
+      $user = $this->database->select(self::TABLE_NAME,'*',[$key => $value])[0];
         return new User(
             $user['name'],
             $user['hash'],
@@ -56,7 +57,7 @@ class MySQLUserRepository implements UserRepository
         $where = [
             'id' => $user->getId()];
 
-        $this->database->update('users', [
+        $this->database->update(self::TABLE_NAME, [
             $key => $value
         ], $where);
     }
@@ -65,7 +66,7 @@ class MySQLUserRepository implements UserRepository
     {
         $searched = new UserCollection();
 
-        $data = $this->database->select('users', '*', [$key => $value]);
+        $data = $this->database->select(self::TABLE_NAME, '*', [$key => $value]);
         foreach ($data as $user) {
             $searched->add(
                 new User(
@@ -84,7 +85,7 @@ class MySQLUserRepository implements UserRepository
     {
         $searched = new UserCollection();
 
-        $data = $this->database->select('users', '*');
+        $data = $this->database->select(self::TABLE_NAME, '*');
         foreach ($data as $user) {
             $searched->add(
                 new User(

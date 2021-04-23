@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserCollection;
 use App\Models\UserImages;
 use App\Repositories\UserImageRepository;
+use App\Validations\ImageValidation;
 
 
 class Content
@@ -14,7 +15,6 @@ class Content
 
     public function __construct(UserImageRepository $imageRepository)
     {
-
         $this->imageRepository = $imageRepository;
     }
 
@@ -36,7 +36,7 @@ class Content
         return ['link' => $link];
     }
 
-    public function userPageInfo(User $user, UserImages $images): array
+    public function userPageInfo(User $user, UserImages $images, ImageValidation $errors): array
     {
         return [
             'name' => $user->getName(),
@@ -47,6 +47,9 @@ class Content
             'first' => $images->getFirstImage(),
             'second' => $images->getSecondImage(),
             'third' => $images->getThirdImage(),
+            'type' => $errors->getTypeError(),
+            'size' => $errors->getSizeError(),
+            'uploadStatus' => $errors->getStatusError(),
         ];
     }
 
@@ -61,7 +64,8 @@ class Content
             'interestID' => $interest->getId(),
             'userImage' => $image,
             'firstImage' => $this->imageRepository->searchUserImages('id', $interest->getId())->getFirstImage(),
-            'lastImage' => $this->imageRepository->searchUserImages('id', $interest->getId())->getThirdImage()
+            'lastImage' => $this->imageRepository->searchUserImages('id', $interest->getId())->getThirdImage(),
+            ''
         ];
     }
 
