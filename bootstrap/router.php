@@ -17,12 +17,15 @@ use App\Middlewares\AuthMiddleware;
 $container = require_once '../bootstrap/container.php';
 
 $middlewares = [
-//    UserHomeController::class . '@userPage' => [
-//        AuthMiddleware::class
-//    ],
-//    HistoryController::class .  '@history' => [
-//        AuthMiddleware::class
-//    ]
+    UserHomeController::class . '@userPage' => [
+        AuthMiddleware::class
+    ],
+    LookingForController::class . '@lookingFor' => [
+        AuthMiddleware::class
+    ],
+    HistoryController::class . '@history' => [
+        AuthMiddleware::class
+    ]
 ];
 
 
@@ -73,10 +76,10 @@ switch ($routeInfo[0]) {
         $middlewareKey = $controller . '@' . $method;
         $controllerMiddlewares = $middlewares[$middlewareKey] ?? [];
 
-        foreach ($controllerMiddlewares as $controllerMiddleware){
+        foreach ($controllerMiddlewares as $controllerMiddleware) {
             (new $controllerMiddleware)->handle($vars);
         }
 
-        echo  $container->get($controller)->$method($vars);
+        echo $container->get($controller)->$method($vars);
         break;
 }
